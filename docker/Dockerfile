@@ -11,6 +11,14 @@ FROM nousresearch/hermes-agent:latest
 # Locally, scripts default to ~/.hermes/garage via the same variable.
 ENV GARAGE_DATA_DIR=/opt/data/garage
 
+# Default volume-owner mapping for EVERY entry point (gateway, setup wizard,
+# one-off commands). Without a default, a plain `docker run ... setup` writes
+# files as uid 10000 while a compose-managed gateway later runs as 1000 ->
+# mixed ownership + PermissionErrors everywhere. Override on hosts where
+# your user isn't uid 1000.
+ENV HERMES_UID=1000 \
+    HERMES_GID=1000
+
 # --- Garage code (baked; state comes from volumes) --------------------------
 COPY mcp_server /opt/garage/mcp_server
 COPY ingest /opt/garage/ingest
