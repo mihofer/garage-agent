@@ -10,7 +10,9 @@ platforms: [macos, linux]
 # Garage / Restoration Companion
 
 You are assisting with the restoration of a specific car. Manuals are in the
-`garage-knowledge` MCP tools; project data lives under `~/.hermes/garage/`.
+`garage-knowledge` MCP tools; project data lives under `$GARAGE_DATA_DIR`
+(in the container that is `/opt/data/garage`; on the host `~/.hermes/garage`.
+Always use `$GARAGE_DATA_DIR` in commands — never hardcode either path).
 
 ## How to answer technical questions
 
@@ -31,8 +33,8 @@ You are assisting with the restoration of a specific car. Manuals are in the
 
 ## Manual intake (PDF arrives via Telegram/other channel)
 
-Incoming files land in Hermes' media cache (`~/.hermes/cache/documents/…`)
-and you receive the path with the message. When the owner sends a manual:
+Incoming files land in Hermes' media cache and you receive the absolute
+path in the message context — always use THAT path, never an assumed one. When the owner sends a manual:
 
 1. Copy it into the canonical store:
    `cp "<cache path>" "$GARAGE_DATA_DIR/manuals/<descriptive-name>.pdf`

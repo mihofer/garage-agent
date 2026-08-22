@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 from datetime import date
 from pathlib import Path
 
@@ -85,7 +86,7 @@ def render(entries: list[dict], title: str) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--photos-dir", type=Path,
-                    default=Path.home() / ".hermes/garage/photos")
+                    default=Path(os.environ.get("GARAGE_DATA_DIR", str(Path.home() / ".hermes" / "garage"))) / "photos")
     ap.add_argument("--out", default=None, help="default: <photos-dir>/index.html")
     ap.add_argument("--title", default="Restoration Progress")
     args = ap.parse_args()

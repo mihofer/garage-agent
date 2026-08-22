@@ -32,7 +32,7 @@ When the owner sends a voice note or audio clip of an engine noise:
 ## Data collection (feeds the future classifier — do this always)
 
 Store the clip with metadata:
-`~/.hermes/garage/audio/YYYY/YYYY-MM-DD_<slug>.<ext>` plus sidecar JSON:
+`$GARAGE_DATA_DIR/audio/YYYY/YYYY-MM-DD_<slug>.<ext>` plus sidecar JSON:
 `{"conditions": "cold start, idle", "heard": "metallic tick, ~2 Hz",
 "cause": null, "confirmed": false}`.
 When the owner later confirms the cause (teardown, repair), update

@@ -13,19 +13,19 @@ metadata:
 
 ## Photo intake (whenever the owner sends photos)
 
-1. Save each photo to `~/.hermes/garage/photos/YYYY/YYYY-MM-DD_<job-slug>/`
+1. Save each photo to `$GARAGE_DATA_DIR/photos/YYYY/YYYY-MM-DD_<job-slug>/`
    keeping the original filename (EXIF stays intact — never re-encode).
 2. Look at each photo (vision) and write a sidecar JSON next to it:
    `IMG_1234.jpg.json` (image filename + `.json`) → `{"caption": "<what it shows,
    part IDs if identifiable>", "job": "<job name>", "note":
    "<optional context from the owner>"}`.
 3. If the photo shows damage/wear worth remembering, add a line to
-   `~/.hermes/garage/restoration-log.md` under the current date with the
+   `$GARAGE_DATA_DIR/restoration-log.md` under the current date with the
    relative photo path.
 
 ## Restoration log
 
-`~/.hermes/garage/restoration-log.md` — append-only by date:
+`$GARAGE_DATA_DIR/restoration-log.md` — append-only by date:
 
 ```markdown
 ## 2025-11-08 — brake overhaul
