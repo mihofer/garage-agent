@@ -51,10 +51,27 @@ backup target.
 ### Option A: prebuilt image (recommended — this is what a friend does)
 
 CI publishes `ghcr.io/mihofer/garage-agent:latest` on every push to the
-default branch. The shipped compose file already points at it:
+default branch. No repo clone needed — just this one file.
+
+**1. Create a `docker-compose.yml` in an empty directory:**
+
+```yaml
+services:
+  gateway:
+    image: ghcr.io/mihofer/garage-agent:latest
+    container_name: hermes-garage
+    restart: unless-stopped
+    volumes:
+      - ~/.hermes:/opt/data
+    environment:
+      TZ: Europe/Berlin            # heartbeat schedule timezone
+      HERMES_UID: 1000             # match your host user (`id -u`/`id -g`)
+      HERMES_GID: 1000             # so volume files stay readable for you
+```
+
+**2. Configure once, then start:**
 
 ```bash
-cd docker
 docker compose pull
 
 # ONE-TIME: interactive wizard — provider keys + Telegram bot token
