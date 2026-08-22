@@ -47,17 +47,27 @@ backup target.
 
 ## Quick start (Docker)
 
-### Option A: prebuilt image (no build needed)
+### Option A: prebuilt image (recommended — this is what a friend does)
 
-CI publishes images to GHCR on every push to `main`:
+CI publishes `ghcr.io/mihofer/garage-agent:latest` on every push to the
+default branch. The shipped compose file already points at it:
 
 ```bash
-# in docker/docker-compose.yml, comment out `build:` and set:
-#   image: ghcr.io/<repo-owner>/garage-agent:latest
-docker pull ghcr.io/<repo-owner>/garage-agent:latest
+cd docker
+docker compose pull
+
+# ONE-TIME: interactive wizard — provider keys + Telegram bot token
+# (@BotFather creates the bot; @userinfobot tells you your numeric ID):
 docker run -it --rm -v ~/.hermes:/opt/data \
-  ghcr.io/<repo-owner>/garage-agent:latest setup    # once: keys + Telegram token
+  ghcr.io/mihofer/garage-agent:latest setup
+echo 'TELEGRAM_ALLOWED_USERS=<your_numeric_id>' >> ~/.hermes/.env
+
+docker compose up -d
+docker logs -f hermes-garage        # first boot: seeding + heartbeats
 ```
+
+First boot auto-installs skills, `SOUL.md`, the ledger, and merges the MCP
+wiring into Hermes' generated config — no manual config editing.
 
 ### Option B: build it yourself
 
@@ -69,7 +79,8 @@ docker compose build
 docker run -it --rm -v ~/.hermes:/opt/data garage-hermes setup
 
 # Index your manuals (host-side python with pypdf+sentence-transformers,
-# or inside a throwaway container):
+# or just send PDFs to the bot on Telegram — it copies, OCRs and indexes
+# them itself):
 python -m ingest.build_index manuals/*.pdf
 
 docker compose up -d                 # supervised always-on gateway
