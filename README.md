@@ -56,8 +56,12 @@ default branch. No repo clone needed — two commands.
 **1. ONE-TIME setup wizard** (provider keys + Telegram bot token;
 create the bot with @BotFather beforehand):
 
+> The `HERMES_UID/GID` flags matter: without them the wizard writes files as
+> a different user than the gateway uses later, causing permission errors.
+
 ```bash
 docker run -it --rm -v ~/.hermes:/opt/data \
+  -e HERMES_UID=$(id -u) -e HERMES_GID=$(id -g) \
   ghcr.io/mihofer/garage-agent:latest setup
 ```
 
