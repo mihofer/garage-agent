@@ -51,41 +51,36 @@ backup target.
 ### Option A: prebuilt image (recommended — this is what a friend does)
 
 CI publishes `ghcr.io/mihofer/garage-agent:latest` on every push to the
-default branch. No repo clone needed — just this one file.
+default branch. No repo clone needed — two commands.
 
-**1. Create a `docker-compose.yml` in an empty directory:**
-
-```yaml
-services:
-  gateway:
-    image: ghcr.io/mihofer/garage-agent:latest
-    container_name: hermes-garage
-    restart: unless-stopped
-    volumes:
-      - ~/.hermes:/opt/data
-    environment:
-      TZ: Europe/Berlin            # heartbeat schedule timezone
-      HERMES_UID: 1000             # match your host user (`id -u`/`id -g`)
-      HERMES_GID: 1000             # so volume files stay readable for you
-```
-
-**2. Configure once, then start:**
+**1. ONE-TIME setup wizard** (provider keys + Telegram bot token;
+@BotFather creates the bot, @userinfobot tells you your numeric ID):
 
 ```bash
-docker compose pull
-
-# ONE-TIME: interactive wizard — provider keys + Telegram bot token
-# (@BotFather creates the bot; @userinfobot tells you your numeric ID):
 docker run -it --rm -v ~/.hermes:/opt/data \
   ghcr.io/mihofer/garage-agent:latest setup
 echo 'TELEGRAM_ALLOWED_USERS=<your_numeric_id>' >> ~/.hermes/.env
-
-docker compose up -d
-docker logs -f hermes-garage        # first boot: seeding + heartbeats
 ```
 
-First boot auto-installs skills, `SOUL.md`, the ledger, and merges the MCP
-wiring into Hermes' generated config — no manual config editing.
+**2. Run the gateway:**
+
+```bash
+docker run -d \
+  --name hermes-garage \
+  --restart unless-stopped \
+  -v ~/.hermes:/opt/data \
+  -e TZ=Europe/Berlin \
+  -e HERMES_UID=$(id -u) \
+  -e HERMES_GID=$(id -g) \
+  ghcr.io/mihofer/garage-agent:latest
+
+# watch first boot (seeding + heartbeat registration):
+docker logs -f hermes-garage
+```
+
+Updating later is just: stop + remove the container, pull, run again — all
+state survives in `~/.hermes`. First boot auto-installs skills, `SOUL.md`,
+the ledger, and merges the MCP wiring into Hermes' generated config.
 
 ### Option B: build it yourself
 
