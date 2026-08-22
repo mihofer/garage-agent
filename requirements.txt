@@ -1,0 +1,14 @@
+# Runtime deps for the garage-hermes image (installed in docker/Dockerfile).
+# Local dev/testing needs none of these except for the pieces you exercise:
+#   tests:            pytest (stdlib code only otherwise)
+#   build_index:      pypdf, sentence-transformers, numpy
+#   mcp servers:      fastmcp
+#   obd-daemon:       obd
+#   ocr (in-container): ocrmypdf (+ system: tesseract-ocr, ghostscript,
+#                       language packs tesseract-ocr-{eng,deu})
+fastmcp
+sentence-transformers
+pypdf
+numpy
+obd
+ocrmypdf

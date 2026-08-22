@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Data — never commit. manuals/ may contain COPYRIGHTED workshop manuals;
+# everything else is personal project state.
+manuals/*
+!manuals/.gitkeep
+index/
+garage-data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.npz
+
+# Photos / audio / documents captured during the restoration (private!)
+photos/
+audio/
+archive/
+alerts/
+restoration-log.md
+
+# Backups & env
+*.tar.gz
+.env
+.env.*

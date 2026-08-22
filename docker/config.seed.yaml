@@ -1,0 +1,27 @@
+# Seeded into /opt/data/config.yaml on first boot.
+# Non-secret configuration only — API keys/tokens belong in /opt/data/.env
+# (written by `hermes setup`) or compose environment variables.
+
+mcp_servers:
+  garage-knowledge:
+    command: "/opt/garage/.venv/bin/python"
+    args: ["-m", "mcp_server.server"]
+    cwd: "/opt/garage"
+  # Phase 3 — enable together with the compose "car" profile (OBD sidecar):
+  # garage-obd:
+  #   command: "/opt/garage/.venv/bin/python"
+  #   args: ["-m", "mcp_server.obd_server"]
+  #   cwd: "/opt/garage"
+
+# Unattended gateway: circuit-break stuck tool loops (recommended for servers).
+tool_loop_guardrails:
+  hard_stop_enabled: true
+  hard_stop_after:
+    exact_failure: 5
+    idempotent_no_progress: 5
+
+# Pin the model for cron heartbeats so fleet cost is predictable
+# (set provider+model you use; keys come from .env):
+# cron:
+#   model: claude-sonnet-4-5
+#   model_provider: anthropic

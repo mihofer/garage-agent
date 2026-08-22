@@ -1,0 +1,45 @@
+# Garage Agent — Hermes in Docker
+#
+# Usage:
+#   docker compose build
+#   docker run -it --rm -v ~/.hermes:/opt/data garage-hermes setup   # once: keys + Telegram token
+#   docker compose up -d                                             # always-on gateway
+#   docker compose --profile car up -d                               # + OBD sidecar (Phase 3)
+#
+services:
+  gateway:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    # Friend mode: skip building entirely — pull the published image instead.
+    # Comment out `build:` above and set:
+    # image: ghcr.io/YOUR_GH_USERNAME/garage-agent:latest
+    image: garage-hermes
+    container_name: hermes-garage
+    restart: unless-stopped
+    volumes:
+      - ~/.hermes:/opt/data            # ALL state: config, skills, keys, garage data
+    environment:
+      # Heartbeat cron times ("Mon 08:00") run in the container's timezone.
+      # Set yours or schedules will fire in UTC:
+      TZ: Europe/Berlin
+    # environment:
+    #   HERMES_UID: ${HERMES_UID:-1000}
+    #   HERMES_GID: ${HERMES_GID:-1000}
+    #   # Only to expose the OpenAI-compatible API server beyond localhost:
+    #   API_SERVER_ENABLED: "true"
+    #   API_SERVER_HOST: 0.0.0.0
+    #   API_SERVER_KEY: ${API_SERVER_KEY}
+
+  # Phase 3 — in-car telemetry. Same image, different command.
+  # Needs the garage-obd MCP server uncommented in ~/.hermes/config.yaml.
+  obd:
+    image: garage-hermes
+    container_name: hermes-garage-obd
+    restart: unless-stopped
+    profiles: ["car"]
+    command: ["python3", "/opt/garage/scripts/obd-daemon.py"]
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0     # ELM327 USB adapter
+    volumes:
+      - ~/.hermes/garage:/opt/data/garage   # shares telemetry.sqlite + alerts
