@@ -5,6 +5,7 @@
 set -u
 
 GARAGE_SKILLS="/opt/garage/skills"
+DATA=/opt/data
 
 have_job() {
     hermes cron list 2>/dev/null | grep -q "$1"
@@ -38,7 +39,18 @@ create classifieds-sweep "0 7 * * *" \
 
 # Backup is a pure script — run in cron's no-agent mode (zero LLM cost).
 # If your Hermes version names the flag differently, check `hermes cron create --help`.
-create backup-nightly "0 3 * * *" \
-  "/opt/garage/scripts/backup.sh" --no-agent
+# Backup is a pure script — run in cron's no-agent mode (zero LLM cost).
+# Contract: --script must point under ~/.hermes/scripts/, so we install it
+# there first. Re-synced on every boot so image updates propagate.
+mkdir -p "$DATA/scripts"
+cp -f /opt/garage/scripts/backup.sh "$DATA/scripts/garage-backup.sh"
+if have_job "backup-nightly"; then
+    echo "[heartbeats] 'backup-nightly' already registered"
+elif hermes cron create "0 3 * * *" --name backup-nightly \
+        --script garage-backup.sh --no-agent 2>&1; then
+    echo "[heartbeats] registered 'backup-nightly' (no-agent)"
+else
+    echo "[heartbeats] WARNING: could not register 'backup-nightly'"
+fi
 
 echo "[heartbeats] done"
