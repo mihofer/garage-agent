@@ -3,7 +3,8 @@
 A car-restoration companion built on [Hermes Agent](https://github.com/NousResearch/hermes-agent):
 answers workshop questions from your indexed service manuals (with citations),
 researches forums and classifieds, tracks parts/budget/inventory in a ledger,
-documents progress with captioned photos, and (Phase 3) reads OBD telemetry.
+documents progress with captioned photos, and reads OBD telemetry (optional,
+built in — see below).
 
 - Scope: [SCOPE.md](SCOPE.md) · Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
 
@@ -14,7 +15,7 @@ garage-agent/
 ├── mcp_server/
 │   ├── knowledge.py        # retrieval logic: hybrid search, archive, chunking
 │   ├── server.py           # garage-knowledge MCP server (manuals + forum archive)
-│   └── obd_server.py       # garage-obd MCP server (Phase 3, reads telemetry.sqlite)
+│   └── obd_server.py       # garage-obd MCP server (reads telemetry.sqlite)
 ├── ingest/
 │   ├── build_index.py      # PDFs -> chunks -> FTS5 + embeddings
 │   └── import_archive.py   # JSONL forum threads -> archive index
@@ -26,7 +27,7 @@ garage-agent/
 │   ├── garage-checklist/   # printable torque worksheets per job
 │   └── garage-audio/       # noise triage via spectrogram + labeled data collection
 ├── scripts/
-│   ├── obd-daemon.py       # Phase 3 sidecar: PID sampling -> telemetry.sqlite (+ --simulate)
+│   ├── obd-daemon.py       # OBD sidecar: PID sampling -> telemetry.sqlite (+ --simulate)
 │   ├── build_gallery.py    # photo store -> static HTML timeline
 │   ├── spectrogram.py      # audio -> spectrogram PNG (ffmpeg)
 │   └── backup.sh           # restic or tar.gz nightly backup
@@ -90,16 +91,23 @@ docker compose logs -f gateway       # watch first boot (seeding, heartbeats)
 Then message the bot on Telegram and try the acceptance test: ask for a
 torque spec that's only in your manual — it must cite manual + page.
 
-### In-car / OBD (Phase 3)
+### In-car / OBD (optional, ships built-in but disabled)
 
-```bash
-# uncomment garage-obd in ~/.hermes/config.yaml, then:
-docker compose --profile car up -d
-```
+The OBD telemetry stack is included in the image: the MCP server
+(`garage-obd`) and the sampling daemon. It's off by default — enable it in
+two steps:
 
-The `obd` service shares the same image, gets `/dev/ttyUSB0`, samples PIDs
-into `garage/telemetry.sqlite`, and writes DTC alert files. Test without a
-car: `python3 scripts/obd-daemon.py --simulate --duration 30`.
+1. **Start the daemon** (needs an ELM327 adapter on USB):
+   ```bash
+   # uncomment garage-obd in ~/.hermes/config.yaml, then:
+   docker compose --profile car up -d
+   ```
+2. The daemon samples PIDs into `garage/telemetry.sqlite`, writes DTC alert
+   files, and the agent gains `obd_status` / `obd_snapshot` / `obd_dtc` /
+   `obd_history` tools.
+
+Test without a car:
+`python3 scripts/obd-daemon.py --simulate --duration 30`.
 
 ## Heartbeats (standing cron jobs)
 
