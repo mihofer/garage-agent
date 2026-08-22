@@ -54,13 +54,15 @@ CI publishes `ghcr.io/mihofer/garage-agent:latest` on every push to the
 default branch. No repo clone needed — two commands.
 
 **1. ONE-TIME setup wizard** (provider keys + Telegram bot token;
-@BotFather creates the bot, @userinfobot tells you your numeric ID):
+create the bot with @BotFather beforehand):
 
 ```bash
 docker run -it --rm -v ~/.hermes:/opt/data \
   ghcr.io/mihofer/garage-agent:latest setup
-echo 'TELEGRAM_ALLOWED_USERS=<your_numeric_id>' >> ~/.hermes/.env
 ```
+
+The wizard walks you through provider, model, and Telegram — have your bot
+token and your numeric Telegram user ID ready (it writes both).
 
 **2. Run the gateway:**
 
