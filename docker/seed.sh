@@ -21,6 +21,16 @@ if [ ! -f "$DATA/.garage-seeded" ]; then
     cp -f /opt/garage/soul.seed.md "$DATA/SOUL.md"
 fi
 
+# 1c. Status phrases (KITT catalog) — first boot only, like SOUL.md
+if [ ! -f "$DATA/status_phrases.yaml" ]; then
+    echo "[seed] installing status_phrases.yaml"
+    cp /opt/garage/status_phrases.seed.yaml "$DATA/status_phrases.yaml"
+fi
+
+# 1d. KITT scanner GIF into garage assets (build artifact — refresh each boot)
+mkdir -p "$GARAGE/assets"
+cp -f /opt/garage/assets/kitt_scanner.gif "$GARAGE/assets/kitt_scanner.gif" 2>/dev/null || true
+
 # 2. Skills — three-way update logic:
 #      - not installed yet            -> install
 #      - shipped version unchanged    -> nothing

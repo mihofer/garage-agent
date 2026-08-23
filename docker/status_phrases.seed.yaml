@@ -1,0 +1,18 @@
+# KITT-flavoured status phrases (replaces the generic catalog).
+# Constraints: max 80 phrases per surface, 160 chars each. No interpolation
+# of tool output — these are static strings shown while tools run.
+status:
+  - "Scanning."
+  - "On it."
+  - "Running diagnostics."
+  - "Consulting the manuals."
+  - "Searching the archive."
+  - "Checking torque specs."
+  - "Analyzing."
+  - "One moment."
+  - "Cross-referencing sources."
+  - "Digging through the parts catalog."
+generic:
+  - "Working."
+  - "Give me a second."
+  - "On it."
