@@ -26,11 +26,51 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mcp_server import knowledge  # noqa: E402
 
 
-def extract_pages(pdf_path: Path) -> list[tuple[int, str]]:
+def extract_pages(pdf_path: Path, ocr: bool = True) -> list[tuple[int, str]]:
+    """Extract [(page_no, text)] with per-page OCR fallback.
+
+    Preferred backend: pymupdf (fast, renders blank pages for OCR inline).
+    Falls back to pypdf (text layer only, no OCR) when pymupdf is absent.
+    OCR language: TESSERACT_LANG env (default 'eng'; e.g. 'deu+eng').
+    """
+    try:
+        import fitz  # pymupdf
+    except ImportError:
+        return _extract_pages_pypdf(pdf_path)
+
+    import os
+    lang = os.environ.get("TESSERACT_LANG", "eng")
+    pages = []
+    doc = fitz.open(pdf_path)
+    try:
+        for i, page in enumerate(doc):
+            text = (page.get_text() or "").strip()
+            if not text and ocr:
+                text = _ocr_fitz_page(page, lang)
+                if text:
+                    print(f"    {Path(pdf_path).name} p.{i + 1}: OCR ({len(text)} chars)")
+            pages.append((i + 1, text))
+    finally:
+        doc.close()
+    return pages
+
+
+def _ocr_fitz_page(page, lang: str) -> str:
+    try:
+        import pytesseract
+        from PIL import Image
+    except ImportError:
+        return ""
+    pix = page.get_pixmap(dpi=200)
+    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    return pytesseract.image_to_string(img, lang=lang).strip()
+
+
+def _extract_pages_pypdf(pdf_path: Path) -> list[tuple[int, str]]:
     from pypdf import PdfReader
     reader = PdfReader(pdf_path)
-    return [(i + 1, (page.extract_text() or "").strip())
-            for i, page in enumerate(reader.pages)]
+    return [(i + 1, (p.extract_text() or "").strip())
+            for i, p in enumerate(reader.pages)]
 
 
 def build(pdf_paths: list[str], embed: bool = True) -> None:

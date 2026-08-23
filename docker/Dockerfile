@@ -26,7 +26,7 @@ COPY scripts /opt/garage/scripts
 COPY ledger /opt/garage/ledger
 RUN python3 -m venv /opt/garage/.venv && \
     /opt/garage/.venv/bin/pip install --no-cache-dir \
-        fastmcp sentence-transformers pypdf numpy obd ocrmypdf && \
+        fastmcp sentence-transformers pypdf pymupdf pillow pytesseract numpy obd ocrmypdf && \
     apt-get -o Acquire::Retries=3 update && \
     apt-get install -y --no-install-recommends sqlite3 tesseract-ocr \
         tesseract-ocr-eng tesseract-ocr-deu ghostscript && \

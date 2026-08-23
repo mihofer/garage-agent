@@ -9,6 +9,9 @@
 fastmcp
 sentence-transformers
 pypdf
+pymupdf
+pillow
+pytesseract
 numpy
 obd
 ocrmypdf

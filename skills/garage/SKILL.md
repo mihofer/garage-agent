@@ -47,11 +47,12 @@ path in the message context — always use THAT path, never an assumed one. When
 2. Reindex just that manual (safe to re-run; replaces old chunks):
    `/opt/garage/.venv/bin/python -m ingest.build_index <pdf>`
 3. Verify: `list_manuals` shows it; run one test query and report the chunk
-   count to the owner. Warn if a PDF yielded 0 chunks (likely a scan) and
-   OCR it yourself — the tooling is baked into this container:
-   `/opt/garage/.venv/bin/ocrmypdf --skip-text -l deu+eng <in.pdf> <out.pdf>`
-   (adjust `-l` to the manual's language(s)), then index `<out.pdf>`.
-   OCR is slow — tell the owner it's running and report when done.
+   count to the owner. The indexer OCRs image-only pages automatically
+   (language via TESSERACT_LANG, default 'eng' — set 'deu+eng' for German
+   manuals). Only if a PDF STILL yields 0 chunks, fall back to whole-file
+   pre-OCR: `/opt/garage/.venv/bin/ocrmypdf --skip-text -l deu+eng <in.pdf>
+   <out.pdf>` and index `<out.pdf>`. OCR is slow — send the scanner
+   animation first and report progress.
 
 ## Long operations
 
