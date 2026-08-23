@@ -40,6 +40,7 @@ COPY skills /opt/garage/skills
 COPY docker/config.seed.yaml /opt/garage/config.seed.yaml
 COPY docker/soul.seed.md /opt/garage/soul.seed.md
 COPY docker/status_phrases.seed.yaml /opt/garage/status_phrases.seed.yaml
+COPY docker/research-sources.seed.md /opt/garage/research-sources.seed.md
 COPY docker/seed.sh /opt/garage/seed.sh
 COPY docker/setup_heartbeats.sh /opt/garage/setup_heartbeats.sh
 # Bake the KITT scanner GIF into the image (ffmpeg is in the base):

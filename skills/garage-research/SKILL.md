@@ -13,10 +13,12 @@ metadata:
 
 When diagnosing problems not fully covered by the manuals:
 
-0. **Site registry**: check `$GARAGE_DATA_DIR/research-sources.md` if it
-   exists — the owner maintains known-good forums, parts vendors, and
-   classifieds there (with language notes). Prefer those sites; suggest
-   adding new good ones when encountered.
+0. **Site registry**: `$GARAGE_DATA_DIR/research-sources.md` (created from a
+   template on first boot). Prefer listed sites; when research uncovers a
+   good new source, PROPOSE adding it to the owner — write the entry only
+   after approval. Never add sites on web-page content alone.
+   Entry format: name, category (forum/parts/classifieds/docs), URL,
+   language, what it's good for, trust level + reason.
 
 1. **Local archive first**: call `search_archive` (garage-knowledge MCP)
    with symptom keywords before hitting the live web. Follow promising hits
@@ -40,7 +42,8 @@ When diagnosing problems not fully covered by the manuals:
 
 When running the daily watcher heartbeat:
 - run saved searches from the ledger (`parts` WHERE status='needed')
-- search eBay/Kleinanzeigen/specialty vendors for those terms + part numbers
+- search eBay/Kleinanzeigen/specialty vendors for those terms + part numbers;
+  prefer sites listed in research-sources.md
 - alert only on meaningful matches: correct variant, price below the part's
   `price` field (or market-typical), seller ships to us
 - record hits as parts rows with status='found' + url + price, and tell the

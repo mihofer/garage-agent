@@ -31,6 +31,12 @@ fi
 mkdir -p "$GARAGE/assets"
 cp -f /opt/garage/assets/kitt_scanner.gif "$GARAGE/assets/kitt_scanner.gif" 2>/dev/null || true
 
+# 1e. Research sources registry (template) — first boot only
+if [ ! -f "$GARAGE/research-sources.md" ]; then
+    echo "[seed] installing research-sources.md template"
+    cp /opt/garage/research-sources.seed.md "$GARAGE/research-sources.md"
+fi
+
 # 2. Skills — three-way update logic:
 #      - not installed yet            -> install
 #      - shipped version unchanged    -> nothing
