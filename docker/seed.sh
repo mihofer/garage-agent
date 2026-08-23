@@ -21,13 +21,46 @@ if [ ! -f "$DATA/.garage-seeded" ]; then
     cp -f /opt/garage/soul.seed.md "$DATA/SOUL.md"
 fi
 
-# 2. Skills (idempotent: only installed when missing)
-mkdir -p "$DATA/skills"
+# 2. Skills — three-way update logic:
+#      - not installed yet            -> install
+#      - shipped version unchanged    -> nothing
+#      - locally untouched            -> fast-forward to shipped update
+#      - locally modified (agent      -> KEEP local version, park the shipped
+#        learning loop / user edits)     update in $DATA/skill-updates/<name>
+#                                        for manual reconciliation
+#    "Locally modified" is detected against the hash recorded at install time.
+mkdir -p "$DATA/skills" "$DATA/.skill-hashes"
 for skill_dir in /opt/garage/skills/*/; do
     name=$(basename "$skill_dir")
-    if [ ! -d "$DATA/skills/$name" ]; then
+    live="$DATA/skills/$name/SKILL.md"
+    incoming="$skill_dir/SKILL.md"
+    hash_file="$DATA/.skill-hashes/$name"
+
+    if [ ! -f "$live" ]; then
         echo "[seed] installing skill: $name"
         cp -r "$skill_dir" "$DATA/skills/$name"
+        sha256sum "$incoming" | cut -d' ' -f1 > "$hash_file"
+        continue
+    fi
+
+    installed_hash=$(cat "$hash_file" 2>/dev/null || echo "")
+    live_hash=$(sha256sum "$live" | cut -d' ' -f1)
+    incoming_hash=$(sha256sum "$incoming" | cut -d' ' -f1)
+
+    if [ "$incoming_hash" = "$installed_hash" ]; then
+        continue                                    # no shipped change
+    fi
+    if [ "$live_hash" = "$installed_hash" ]; then
+        echo "[seed] updating skill: $name"
+        rm -rf "$DATA/skills/$name"
+        cp -r "$skill_dir" "$DATA/skills/$name"
+        echo "$incoming_hash" > "$hash_file"
+    else
+        echo "[seed] CONFLICT: skill '$name' was modified locally — kept yours,"
+        echo "[seed]          shipped update parked in $DATA/skill-updates/$name"
+        mkdir -p "$DATA/skill-updates"
+        rm -rf "$DATA/skill-updates/$name"
+        cp -r "$skill_dir" "$DATA/skill-updates/$name"
     fi
 done
 
