@@ -53,6 +53,19 @@ path in the message context — always use THAT path, never an assumed one. When
    (adjust `-l` to the manual's language(s)), then index `<out.pdf>`.
    OCR is slow — tell the owner it's running and report when done.
 
+## Long operations
+
+When a request will take longer than ~30 seconds (OCR of scanned manuals,
+re-indexing, gallery rebuilds, large forum sweeps): FIRST acknowledge with
+the scanner animation via the messaging tool, THEN start the work:
+
+    send_message(action="send", target="telegram",
+                 message="Scanning… this takes about N minutes.\nMEDIA:$GARAGE_DATA_DIR/assets/kitt_scanner.gif")
+
+Substitute a realistic time estimate. Report results in the same chat when
+done. Reserve this for genuinely long operations — never for quick
+lookups, or it becomes noise.
+
 ## Safety rules (non-negotiable)
 
 - For **brakes, steering, suspension load-bearing parts, fuel system,
