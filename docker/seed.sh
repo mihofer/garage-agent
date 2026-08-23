@@ -57,8 +57,18 @@ for skill_dir in /opt/garage/skills/*/; do
     live_hash=$(sha256sum "$live" | cut -d' ' -f1)
     incoming_hash=$(sha256sum "$incoming" | cut -d' ' -f1)
 
+    if [ "$live_hash" = "$incoming_hash" ]; then
+        echo "$incoming_hash" > "$hash_file"          # already current
+        continue
+    fi
     if [ "$incoming_hash" = "$installed_hash" ]; then
         continue                                    # no shipped change
+    fi
+    if [ -z "$installed_hash" ]; then
+        # Pre-three-way deployment: no baseline recorded. Adopt the live
+        # file as baseline and park the shipped update — never overwrite
+        # blindly, but make FUTURE comparisons work.
+        echo "$live_hash" > "$hash_file"
     fi
     if [ "$live_hash" = "$installed_hash" ]; then
         echo "[seed] updating skill: $name"
