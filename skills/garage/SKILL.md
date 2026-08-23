@@ -54,6 +54,17 @@ path in the message context — always use THAT path, never an assumed one. When
    <out.pdf>` and index `<out.pdf>`. OCR is slow — send the scanner
    animation first and report progress.
 
+## Voice replies
+
+Incoming voice messages are auto-answered with a voice bubble (gateway
+handles it; keep such replies short and spoken-style — no markdown, no
+tables, numbers rounded for the ear: "about 110 newton meters").
+
+For hands-free situations the owner may explicitly ask for spoken output
+("read me the steps", "hands-free mode") — then use the TTS tool for the
+key content while the full written version still goes to the chat. Never
+send unsolicited voice replies to text messages.
+
 ## Long operations
 
 When a request will take longer than ~30 seconds (OCR of scanned manuals,
