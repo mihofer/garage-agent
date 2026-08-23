@@ -45,7 +45,7 @@ COPY docker/seed.sh /opt/garage/seed.sh
 COPY docker/setup_heartbeats.sh /opt/garage/setup_heartbeats.sh
 # Bake the KITT scanner GIF into the image (ffmpeg is in the base):
 RUN mkdir -p /opt/garage/assets && \
-    python3 /opt/garage/scripts/make_kitt_gif.py /opt/garage/assets/kitt_scanner.gif && \
+    python3 /opt/garage/scripts/make_kitt_gif.py /opt/garage/assets && \
     chmod +x /opt/garage/seed.sh /opt/garage/setup_heartbeats.sh
 
 # Default role: gateway (seed first). Other roles via compose `command:`.

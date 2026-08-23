@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Generate the KITT scanner-light GIF (red sweep with fading tail).
+"""Generate the KITT scanner-light animation (red sweep with fading tail).
 
 Pure ffmpeg under the hood: renders one PNG per frame with stacked drawbox
-filters (bright head + dimming trail), then assembles a palettized,
-infinitely looping GIF.
+filters, then assembles:
+  - kitt_scanner.mp4  (H.264, silent — Telegram plays short muted mp4s as
+                       looping animations; more reliable in chats than gif)
+  - kitt_scanner.gif  (palettized loop — avatars, web pages, reports)
 
-Usage: make_kitt_gif.py [output.gif]
+Usage: make_kitt_gif.py [output_dir]
 """
 
 from __future__ import annotations
@@ -46,9 +48,34 @@ def frame_filter(pos: int) -> str:
     return ",".join(boxes)
 
 
-def make_gif(out: Path) -> Path:
+def make_gif(frames_dir: Path, out: Path) -> Path:
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-framerate", str(FPS), "-i", str(frames_dir / "f%03d.png"),
+         "-filter_complex",
+         "[0:v]split[a][b];[a]palettegen=max_colors=32[p];[b][p]paletteuse",
+         "-loop", "0", str(out)],
+        check=True)
+    return out
+
+
+def make_mp4(frames_dir: Path, out: Path) -> Path:
+    # Silent H.264/yuv420p: Telegram plays short muted mp4s as looping
+    # animations. Dimensions must be even for yuv420p.
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-framerate", str(FPS), "-i", str(frames_dir / "f%03d.png"),
+         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "23",
+         "-movflags", "+faststart", "-an", str(out)],
+        check=True)
+    return out
+
+
+if __name__ == "__main__":
     if not shutil.which("ffmpeg"):
         sys.exit("ffmpeg not found")
+    dst = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
+    dst.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix="kittgif"))
     try:
         for i, pos in enumerate(positions()):
@@ -58,18 +85,7 @@ def make_gif(out: Path) -> Path:
                  "-frames:v", "1", "-vf", frame_filter(pos),
                  str(tmp / f"f{i:03d}.png")],
                 check=True)
-        subprocess.run(
-            ["ffmpeg", "-y", "-loglevel", "error",
-             "-framerate", str(FPS), "-i", str(tmp / "f%03d.png"),
-             "-filter_complex",
-             "[0:v]split[a][b];[a]palettegen=max_colors=32[p];[b][p]paletteuse",
-             "-loop", "0", str(out)],
-            check=True)
+        print(make_mp4(tmp, dst / "kitt_scanner.mp4"))
+        print(make_gif(tmp, dst / "kitt_scanner.gif"))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-    return out
-
-
-if __name__ == "__main__":
-    dst = Path(sys.argv[1] if len(sys.argv) > 1 else "kitt_scanner.gif")
-    print(make_gif(dst))

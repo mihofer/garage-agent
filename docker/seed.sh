@@ -29,7 +29,7 @@ fi
 
 # 1d. KITT scanner GIF into garage assets (build artifact — refresh each boot)
 mkdir -p "$GARAGE/assets"
-cp -f /opt/garage/assets/kitt_scanner.gif "$GARAGE/assets/kitt_scanner.gif" 2>/dev/null || true
+cp -f /opt/garage/assets/kitt_scanner.mp4 /opt/garage/assets/kitt_scanner.gif "$GARAGE/assets/" 2>/dev/null || true
 
 # 1e. Research sources registry (template) — first boot only
 if [ ! -f "$GARAGE/research-sources.md" ]; then

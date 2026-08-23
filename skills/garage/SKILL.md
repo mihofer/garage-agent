@@ -61,7 +61,7 @@ re-indexing, gallery rebuilds, large forum sweeps): FIRST acknowledge with
 the scanner animation via the messaging tool, THEN start the work:
 
     send_message(action="send", target="telegram",
-                 message="Scanning… this takes about N minutes.\nMEDIA:$GARAGE_DATA_DIR/assets/kitt_scanner.gif")
+                 message="Scanning… this takes about N minutes.\nMEDIA:$GARAGE_DATA_DIR/assets/kitt_scanner.mp4")
 
 Substitute a realistic time estimate. Report results in the same chat when
 done. Reserve this for genuinely long operations — never for quick
