@@ -88,6 +88,10 @@ Updating later is just: stop + remove the container, pull, run again — all
 state survives in `~/.hermes`. First boot auto-installs skills, `SOUL.md`,
 the ledger, and merges the MCP wiring into Hermes' generated config.
 
+> Tip: if you'd rather not maintain the `docker run` incantation, save the
+> repo's `docker/docker-compose.yml` (keep only the `gateway` service) —
+> then updating becomes just `docker compose pull && docker compose up -d`.
+
 ### Option B: build it yourself
 
 ```bash
@@ -140,6 +144,53 @@ Registered automatically at first boot (`setup_heartbeats.sh`, idempotent):
 
 Manage with plain language ("pause the classifieds sweep") — Hermes exposes
 a `cronjob` tool. Session-scoped watching uses `/heartbeat every 15m …`.
+
+## Updating
+
+All state lives in `~/.hermes` — upgrading never touches config, skills,
+sessions, keys, or garage data.
+
+**Compose deployments:**
+
+```bash
+cd docker
+git pull                      # owner mode: pick up skill/seed updates too
+docker compose pull           # prebuilt image mode
+docker compose up -d          # recreates the container on the new image
+```
+
+(Owner mode builds locally instead: `docker compose build --pull`.)
+
+**Plain `docker run` deployments:**
+
+```bash
+docker pull ghcr.io/mihofer/garage-agent:latest
+docker stop hermes-garage && docker rm hermes-garage
+# …then re-run the exact `docker run` command from setup
+```
+
+This friction is why compose is worth keeping around even for a single
+container.
+
+### Automatic updates (optional)
+
+Watchtower checks GHCR daily and recreates the container when a new image
+appears:
+
+```yaml
+# append to your docker-compose.yml
+services:
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 86400 --cleanup hermes-garage
+```
+
+Caveat: auto-updates arrive whether you're watching or not. Restarts are
+safe (seeding is idempotent), but for a workshop tool you depend on,
+scheduled manual updates are the conservative choice.
 
 ## Local development & tests
 
