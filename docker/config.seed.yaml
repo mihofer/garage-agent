@@ -20,6 +20,14 @@ tool_loop_guardrails:
     exact_failure: 5
     idempotent_no_progress: 5
 
+# Keep Telegram clean: no tool-activity bubbles; full audit trail lands in
+# ~/.hermes/logs/tool_calls.log instead. Flip to 'all' temporarily when
+# debugging (or enable tool_progress_command for a /verbose toggle).
+display:
+  tool_progress: log
+  tool_progress_command: false
+  tool_progress_grouping: accumulate
+
 # Pin the model for cron heartbeats so fleet cost is predictable
 # (set provider+model you use; keys come from .env):
 # cron:
