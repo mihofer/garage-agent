@@ -16,11 +16,16 @@ mcp_servers:
 # Unattended gateway: circuit-break stuck tool loops (recommended for servers).
 # Voice: Edge TTS is free (no API key). Auto-TTS fires ONLY for incoming
 # voice messages — text stays text. Per-chat overrides: /voice on|tts|off.
+#
+# Voice choice = KITT impression: posh, measured, calm authority.
+#   en-GB-RyanNeural    <- default; authoritative British, closest match
+#   en-US-ChristopherNeural  <- deep US alternative
+#   de-DE-ConradNeural  <- German, older male, similar gravitas
 tts:
   provider: "edge"
-  speed: 1.0
+  speed: 0.95                   # slightly measured cadence
   edge:
-    voice: "en-US-AriaNeural"   # German: "de-DE-KatjaNeural" / "de-DE-ConradNeural"
+    voice: "en-GB-RyanNeural"
 
 voice:
   auto_tts: true                # voice message in -> voice reply out
