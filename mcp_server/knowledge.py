@@ -59,8 +59,12 @@ def connect(create: bool = True) -> sqlite3.Connection:
 
 # ---------------------------------------------------------------- chunking
 
-def chunk_page(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
-    """Split on paragraph boundaries; hard-split oversized blocks."""
+def chunk_page(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = 150) -> list[str]:
+    """Split on paragraph boundaries; hard-split oversized blocks.
+
+    Hard-split blocks advance with `overlap` chars of context carry-over so
+    specs near a split point remain retrievable from both sides.
+    """
     paragraphs = [p for p in _split_paragraphs(text) if p]
     chunks: list[str] = []
     buf = ""
@@ -69,8 +73,11 @@ def chunk_page(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
             if buf:
                 chunks.append(buf)
                 buf = ""
-            chunks.append(para[:chunk_size])
-            para = para[chunk_size:]
+            cut = para.rfind(" ", chunk_size // 2)
+            if cut == -1:
+                cut = chunk_size
+            chunks.append(para[:cut].strip())
+            para = para[max(cut - overlap, 0):]
         if not para:
             continue
         if len(buf) + len(para) + 1 > chunk_size:

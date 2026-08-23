@@ -13,6 +13,11 @@ metadata:
 
 When diagnosing problems not fully covered by the manuals:
 
+0. **Site registry**: check `$GARAGE_DATA_DIR/research-sources.md` if it
+   exists — the owner maintains known-good forums, parts vendors, and
+   classifieds there (with language notes). Prefer those sites; suggest
+   adding new good ones when encountered.
+
 1. **Local archive first**: call `search_archive` (garage-knowledge MCP)
    with symptom keywords before hitting the live web. Follow promising hits
    with `get_thread(url)`.

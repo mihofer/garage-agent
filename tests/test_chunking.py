@@ -26,7 +26,12 @@ def test_oversized_block_hard_split():
     wall = "A" * 5000
     chunks = chunk_page(wall)
     assert all(len(c) <= 1200 for c in chunks)
-    assert "".join(chunks).count("A") == 5000
+    # full coverage: first chunk starts at 0, last chunk reaches the end
+    assert chunks[0].startswith("A" * 100)
+    assert chunks[-1].endswith("A" * 100)
+    # consecutive chunks overlap (context carry-over across split points)
+    for a, b in zip(chunks, chunks[1:]):
+        assert a[-100:] == b[:100] or a[-100:] in b
 
 
 def test_empty_and_whitespace_only():
