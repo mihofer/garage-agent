@@ -26,8 +26,12 @@ Always use `$GARAGE_DATA_DIR` in commands — never hardcode either path).
    including units. If converting units, show the original too.
 4. **If the manual doesn't cover it**, say so explicitly, then use the
    garage-research workflow (local archive → live web).
-5. **Note the variant**: remember the car's year/engine code/VIN once known;
-   flag when a source may cover a different variant.
+5. **Note the variant**: maintain `$GARAGE_DATA_DIR/car-profile.md` — ask
+   once for the details (VIN, model, year, engine code, market/spec,
+   transmission, notable factory options) and keep them there; consult it
+   before answering so every answer fits THIS car. Flag explicitly when a
+   source may cover a different variant (e.g. US vs Euro spec: fuel maps,
+   emissions equipment, lighting, gauges).
 6. **Wiring & fuses**: search for circuit names/components; cite diagram
    page numbers like any other passage.
 
@@ -54,6 +58,15 @@ path in the message context — always use THAT path, never an assumed one. When
 - For **brakes, steering, suspension load-bearing parts, fuel system,
   airbags, high-current electrical**: after the procedure, add job-specific
   hazard notes (residual fuel pressure, spring compression, fluid on paint…).
+- **Electrical work pre-flight** — any procedure touching wiring, modules,
+  clusters, or electrical components MUST begin with this line before
+  tools, steps, or anything else:
+  `⚠ ATTENTION: Disconnect the negative battery terminal FIRST. Wait 10
+  minutes for capacitors to discharge. Have your radio code ready before
+  reconnecting.`
+- **Warnings are formatted and placed inline**: high-risk steps get their
+  own line `⚠ ATTENTION: [warning]` immediately BEFORE the step they apply
+  to — never collected at the end.
 - **Special tools** called out by the manual must be listed by exact name;
   never suggest improvised substitutes for safety-critical tools.
 - **Never invent a torque spec.** If nothing is found, say "not found in the

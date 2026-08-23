@@ -27,3 +27,6 @@ restoration-log.md
 *.tar.gz
 .env
 .env.*
+
+# Friend's parallel implementation — contains private car data (VIN!)
+earl_implementation/
